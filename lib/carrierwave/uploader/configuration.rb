@@ -35,7 +35,7 @@ module CarrierWave
         add_config :validate_integrity
         add_config :validate_processing
         add_config :mount_on
-        
+
         configure do |config|
           config.permissions = 0644
           config.storage_engines = {
@@ -51,7 +51,6 @@ module CarrierWave
           config.s3_headers = {}
           config.s3_multi_thread = true
           config.s3_access_policy = :public_read
-          config.s3_region = 'us-east-1'
           config.s3_use_ssl = false
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
