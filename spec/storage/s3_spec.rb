@@ -15,6 +15,7 @@ if ENV['S3_SPEC']
       @uploader.stub!(:s3_cnamed).and_return(false)
       @uploader.stub!(:s3_multi_thread).and_return(true)
       @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
+      @uploader.stub!(:s3_use_ssl).and_return(false)
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
@@ -114,5 +115,32 @@ if ENV['S3_SPEC']
       end
     end
 
+    describe 'public url' do
+      before do
+        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+        @s3_file = @storage.store!(@file)
+      end
+
+      context "with ssl enabled" do
+        before do
+          @uploader.stub!(:s3_use_ssl).and_return(true)
+        end
+
+        it 'should use https' do
+          URI.parse(@s3_file.url).scheme.should == 'https'
+        end
+      end
+
+      context "with ssl disabled" do
+        before do
+          @uploader.stub!(:s3_use_ssl).and_return(false)
+        end
+
+        it 'should use http' do
+          URI.parse(@s3_file.url).scheme.should == 'http'
+        end
+      end
+    end
   end
+
 end
